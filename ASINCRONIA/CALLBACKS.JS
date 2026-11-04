@@ -151,7 +151,7 @@ prepararPanqueques()
         servirDesayuno(mensaje);
     })
     .catch(error => console.log(error.message));
-/*/
+
 
 
 function descargarArchivo(nombre) {
@@ -207,4 +207,65 @@ descargarArchivo('Documento')
     })
     .finally(() => {
         console.log('Fin del intento');
+    });
+/*/
+
+
+const ingredientes = [
+    { nombre: 'Pollo', tiempo: 1500 },
+    { nombre: 'Arroz', tiempo: 1000 },
+    { nombre: 'Verduras', tiempo: 1200 },
+    { nombre: 'Salsa', tiempo: 800 },
+    { nombre: 'Especias', tiempo: 500 },
+];
+
+const cocineros = [
+    { nombre: 'Laura', ingredientes: ['Pollo', 'Especias'] },
+    { nombre: 'Andrés', ingredientes: ['Arroz'] },
+    { nombre: 'Sofía', ingredientes: ['Verduras', 'Salsa'] },
+];
+
+// Preparar un ingrediente
+const prepararIngrediente = (ingrediente) => {
+    return new Promise((resolve, reject) => {
+        console.log(`Preparando ${ingrediente.nombre}...`);
+
+        setTimeout(() => {
+            console.log(`${ingrediente.nombre} listo`);
+            resolve(ingrediente.nombre);
+        }, ingrediente.tiempo);
+    });
+};
+
+// Cocinar los ingredientes de cada cocinero en secuencia
+const cocinar = (cocinero) => {
+    let tiempo = 0;
+
+    const preparaciones = cocinero.ingredientes.map(nombre => {
+        const ingrediente = ingredientes.find(i => i.nombre === nombre);
+        tiempo += ingrediente.tiempo;
+        return ingrediente;
+    });
+
+    return preparaciones.reduce((promesa, ingrediente) => {
+        return promesa.then(() => prepararIngrediente(ingrediente));
+    }, Promise.resolve())
+    .then(() => {
+        return `${cocinero.nombre} terminó: ${cocinero.ingredientes.join(', ')} (${tiempo} ms)`;
+    });
+};
+
+// Cocineros trabajan en paralelo
+console.time('Tiempo total');
+
+Promise.all(cocineros.map(cocinar))
+    .then(resultados => {
+        resultados.forEach(resultado => console.log(resultado));
+        console.log('Pedido listo');
+    })
+    .catch(error => {
+        console.log('Error en el pedido:', error.message);
+    })
+    .finally(() => {
+        console.timeEnd('Tiempo total');
     });
